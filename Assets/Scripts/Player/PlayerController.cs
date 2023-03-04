@@ -18,6 +18,11 @@ public class PlayerController : MonoBehaviour
 		private List<Interactable> interactablesToPickup = new List<Interactable>();
 		private List<GameObject> goldToPickUp = new List<GameObject>();
 		private CharacterCombat combat; 
+		public float dashDistance = 100f;
+		public float dashDuration = 0.5f;
+		private bool isDashing = false;
+		private float currentDashTime = 0f;
+		private Vector3 dashStartPosition; 
 
 
 	void Start()
@@ -47,10 +52,13 @@ public class PlayerController : MonoBehaviour
 		isCursorOn = true;
 		}
 		}
-	}
-	void FixedUpdate()
-	{
-		
+		if(Input.GetKeyDown(KeyCode.LeftShift) && !isDashing)
+		{
+			  // Start the dash
+			isDashing = true;
+			currentDashTime = 0f;
+			dashStartPosition = transform.position;
+		}
 		//CAMERA + PLAYER MOVEMENT
 		//-----------------------------------------------------------------------------------------
 		float horizontalInput = Input.GetAxisRaw("Horizontal");
@@ -65,9 +73,49 @@ public class PlayerController : MonoBehaviour
 			Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
 			Move(moveDirection);
 		}
+				void Move(Vector3 moveDirection)
+		{
+			 if (isDashing)
+		{
+		// Calculate the dash distance covered so far
+		float dashCoveredDistance = Vector3.Distance(transform.position, dashStartPosition);
+			 // Calculate the factor to multiply the movement by
+		float dashMovementFactor = dashDistance / dashDuration;
+
+		// If the dash distance is not covered yet, move the controller in the dash direction
+		if (dashCoveredDistance < dashDistance)
+		{
+			controller.Move(moveDirection.normalized * speed * dashMovementFactor  * Time.deltaTime);
+			currentDashTime += Time.deltaTime;
+		}
+		else
+		{
+			// End the dash
+			isDashing = false;
+			currentDashTime = 0f;
+		}
+
+		// If the dash duration is over, end the dash
+		if (currentDashTime >= dashDuration)
+		{
+			isDashing = false;
+			currentDashTime = 0f;
+		}
+	}
+	else
+	{
+		// Move the controller in the regular direction
+		controller.Move(moveDirection.normalized * speed * Time.deltaTime);
+	}
+		}
 		//------------------------------------------------------------------------------------------
 
-
+	}
+	
+	void FixedUpdate()
+	{
+		
+	
 
 		// PICK UP ITEMS/GOLD
 		//------------------------------------------------------------------------------------------
@@ -117,10 +165,6 @@ public class PlayerController : MonoBehaviour
 			newInteractable.OnEnterInteractZone(transform);
 		}
 		
-		void Move(Vector3 moveDirection)
-		{
-			controller.Move(moveDirection.normalized * speed * Time.deltaTime);
-		}
 	}
 	
 	void OnTriggerEnter(Collider other)

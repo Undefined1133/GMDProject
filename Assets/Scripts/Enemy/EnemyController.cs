@@ -29,17 +29,20 @@ public class EnemyController : MonoBehaviour
 		{
 			if(agent != null)
 			{
-				agent.SetDestination(target.position);
-			agent.stoppingDistance = 1f;
-			if(agent.remainingDistance <= agent.stoppingDistance)
-			{
-				targetStats.Add(target.GetComponent<CharacterStats>());
-				if(targetStats != null)
+				if(target != null)
 				{
-				combat.Attack(targetStats);
-				FaceTarget();
+			      agent.SetDestination(target.position);
+			      agent.stoppingDistance = 1f;
+			      if(agent.remainingDistance <= agent.stoppingDistance)
+			      {
+				  targetStats.Add(target.GetComponent<CharacterStats>());
+				    if(targetStats != null)
+				    {
+				    combat.Attack(targetStats);
+				    FaceTarget();
+				    }
+		          }
 				}
-			}
 			}
 		}
 	}
