@@ -11,6 +11,8 @@ public class PlayerManager : MonoBehaviour
 public static PlayerManager instance;
 public TextMeshProUGUI goldText;
 public float gold;
+public HealthBar healthBar;
+
 
 void Awake()
 {
@@ -48,8 +50,11 @@ public void SetGold(float goldAmount)
 public void LoadPlayer()
 {
 	PlayerData data = SaveSystem.LoadPlayer();
+	PlayerStats playerStats = player.GetComponent<PlayerStats>();
+	playerStats.currentHealth = data.health;
 	gold = data.gold;
 	SetGold(data.gold);
+	healthBar.SetHealth(data.health);
 	Vector3 position;
 	position.x = data.position[0];
 	position.y = data.position[1];

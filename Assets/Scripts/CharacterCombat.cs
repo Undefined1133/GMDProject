@@ -24,9 +24,9 @@ public void Attack(List<CharacterStats> targetStatsList)
 	if(attackCooldown <= 0f)
 	{
 	  foreach (CharacterStats targetStats in targetStatsList)
-        {
-            StartCoroutine(DoDamage(targetStats, attackDelay));
-        }
+		{
+			StartCoroutine(DoDamage(targetStats, attackDelay));
+		}
 		if(OnAttack != null)
 		{
 			OnAttack();
