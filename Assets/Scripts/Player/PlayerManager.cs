@@ -10,7 +10,7 @@ public class PlayerManager : MonoBehaviour
 
 public static PlayerManager instance;
 public TextMeshProUGUI goldText;
-private float gold;
+public float gold;
 
 void Awake()
 {
@@ -30,9 +30,31 @@ public void KillPlayer()
 
 public void AddGold(float amount)
 {
-
 gold += amount;
-goldText.text = gold.ToString("F2");
+SetGold(gold);
 }
 
+public void SavePlayer()
+{
+	SaveSystem.SavePlayer(this);
+}
+
+public void SetGold(float goldAmount)
+{
+	goldText.text = goldAmount.ToString("F2");
+
+}
+
+public void LoadPlayer()
+{
+	PlayerData data = SaveSystem.LoadPlayer();
+	SetGold(data.gold);
+	Vector3 position;
+	position.x = data.position[0];
+	position.y = data.position[1];
+	position.z = data.position[2];
+	player.transform.position = position;
+
+	
+}
 }
