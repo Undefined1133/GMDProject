@@ -48,13 +48,12 @@ public void SetGold(float goldAmount)
 public void LoadPlayer()
 {
 	PlayerData data = SaveSystem.LoadPlayer();
+	gold = data.gold;
 	SetGold(data.gold);
 	Vector3 position;
 	position.x = data.position[0];
 	position.y = data.position[1];
 	position.z = data.position[2];
 	player.transform.position = position;
-
-	
 }
 }
