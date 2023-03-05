@@ -4,8 +4,8 @@ public class CharacterStats : MonoBehaviour
 {
 public Stat damage;
 public Stat armor;
-public int maxHealth = 100;
-public int currentHealth{ get;  private set; }
+public int maxHealth;
+public int currentHealth;
 
 
 void Awake()
@@ -14,13 +14,11 @@ void Awake()
 }
 void Update()
 {
-	if(Input.GetKeyDown(KeyCode.T))
-	{
-		TakeDamage(damage.GetValue());
-	}
+
 }
-public void TakeDamage(int damage)
-{
+
+	public virtual void TakeDamage(int damage)
+    {
 	damage -= armor.GetValue();
 	damage = Mathf.Clamp(damage, 0, int.MaxValue);
 	
@@ -31,7 +29,7 @@ public void TakeDamage(int damage)
 	{
 		Die();
 	}
-}
+    }
 
 public virtual void Die()
 {

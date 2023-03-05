@@ -5,10 +5,20 @@ using UnityEngine;
 public class PlayerStats : CharacterStats
 {
 	// Start is called before the first frame update
+	public HealthBar healthBar;
 
 	void Start()
 	{
+		healthBar.SetMaxHealth(maxHealth);
 		EquipmentManager.instance.onEquipmentChanged += OnEquipmentChanged;
+	}
+	
+	void Update()
+	{
+	if(Input.GetKeyDown(KeyCode.T))
+	{
+		TakeDamage(damage.GetValue());
+	}
 	}
 
 	// Update is called once per frame
@@ -34,5 +44,18 @@ public class PlayerStats : CharacterStats
 
 		PlayerManager.instance.KillPlayer();
 	}
+	public override void TakeDamage(int damage)
+    {
+	damage -= armor.GetValue();
+	damage = Mathf.Clamp(damage, 0, int.MaxValue);
 	
+	currentHealth -= damage;
+	Debug.Log(transform.name + " takes " + damage + " damage.");
+	
+	if(currentHealth <= 0)
+	{
+		Die();
+	}
+	healthBar.SetHealth(currentHealth);
+    }
 }
