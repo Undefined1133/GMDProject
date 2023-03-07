@@ -5,13 +5,11 @@ using UnityEngine;
 public class PlayerObject : MonoBehaviour
 {
 	public List<GameObject> enemiesToAttack = new List<GameObject>();
-	// Start is called before the first frame update
 	void Start()
 	{
 		
 	}
 
-	// Update is called once per frame
 	void Update()
 	{
 		

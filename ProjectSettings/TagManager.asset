@@ -9,6 +9,7 @@ TagManager:
   - Ground
   - Gold
   - Enemy
+  - NPC
   layers:
   - Default
   - TransparentFX

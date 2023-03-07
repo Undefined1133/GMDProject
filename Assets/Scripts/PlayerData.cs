@@ -8,6 +8,7 @@ public class PlayerData
    public float gold;
    public float[] position;
    public int health;
+   public int mana;
    
    
    public PlayerData(PlayerManager playerManager)
@@ -17,7 +18,8 @@ public class PlayerData
 	 GameObject player = playerManager.player;
 
 	 gold = playerManager.gold;
-	 health = playerStats.currentHealth;
+	 health = playerStats.currentHealth.GetValue();
+	 mana = playerStats.currentMana.GetValue();
 	 position = new float[3];
 	 
 	 position[0] = player.transform.position.x;

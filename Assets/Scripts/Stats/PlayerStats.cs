@@ -6,10 +6,12 @@ public class PlayerStats : CharacterStats
 {
 	// Start is called before the first frame update
 	public HealthBar healthBar;
+	public ManaBar manaBar;
 
 	void Start()
 	{
-		healthBar.SetMaxHealth(maxHealth);
+		healthBar.SetMaxHealth(maxHealth.GetValue());
+		manaBar.SetMaxMana(maxMana.GetValue());
 		EquipmentManager.instance.onEquipmentChanged += OnEquipmentChanged;
 	}
 	
@@ -20,8 +22,7 @@ public class PlayerStats : CharacterStats
 		TakeDamage(damage.GetValue());
 	}
 	}
-
-	// Update is called once per frame
+	
 	void OnEquipmentChanged(Equipment newItem, Equipment oldItem)
 	{
 		if(newItem != null)
@@ -45,17 +46,17 @@ public class PlayerStats : CharacterStats
 		PlayerManager.instance.KillPlayer();
 	}
 	public override void TakeDamage(int damage)
-    {
+	{
 	damage -= armor.GetValue();
 	damage = Mathf.Clamp(damage, 0, int.MaxValue);
 	
-	currentHealth -= damage;
+	currentHealth.SetValue(currentHealth.GetValue() - damage);
 	Debug.Log(transform.name + " takes " + damage + " damage.");
 	
-	if(currentHealth <= 0)
+	if(currentHealth.GetValue() <= 0)
 	{
 		Die();
 	}
-	healthBar.SetHealth(currentHealth);
-    }
+	healthBar.SetHealth(currentHealth.GetValue());
+	}
 }
