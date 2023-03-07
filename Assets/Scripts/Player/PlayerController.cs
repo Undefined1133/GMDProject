@@ -146,7 +146,7 @@ public class PlayerController : MonoBehaviour
 				}
 		}
 		//------------------------------------------------------------------------------------------
-		if(Input.GetKeyDown("f"))
+		if(Input.GetKey("f"))
 		{
 			Transform playerObj = transform.Find("PlayerObj");
 			PlayerObject playerObjectScript = playerObj.GetComponent<PlayerObject>();
