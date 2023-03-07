@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 
@@ -12,7 +10,8 @@ public static PlayerManager instance;
 public TextMeshProUGUI goldText;
 public float gold;
 public HealthBar healthBar;
-
+public ManaBar manaBar;
+public GameObject player;
 
 void Awake()
 {
@@ -22,7 +21,7 @@ void Awake()
 
 #endregion
 
-public GameObject player;
+
 
 public void KillPlayer()
 {
@@ -44,17 +43,20 @@ public void SavePlayer()
 public void SetGold(float goldAmount)
 {
 	goldText.text = goldAmount.ToString("F2");
-
 }
 
 public void LoadPlayer()
 {
 	PlayerData data = SaveSystem.LoadPlayer();
 	PlayerStats playerStats = player.GetComponent<PlayerStats>();
-	playerStats.currentHealth = data.health;
-	gold = data.gold;
-	SetGold(data.gold);
+	playerStats.currentHealth.SetValue(data.health);
+	playerStats.currentMana.SetValue(data.mana);
 	healthBar.SetHealth(data.health);
+	manaBar.SetMana(data.mana);
+
+	gold = data.gold;
+	
+	SetGold(data.gold);
 	Vector3 position;
 	position.x = data.position[0];
 	position.y = data.position[1];

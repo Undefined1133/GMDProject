@@ -14,6 +14,10 @@ public int GetValue()
 	modifiers.ForEach(value => finalValue += value);
 	return finalValue;
 }
+public void SetValue(int value)
+{
+	baseValue = value;
+}
 
 public void AddModifier(int modifier)
 {

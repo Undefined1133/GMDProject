@@ -134,7 +134,10 @@ MonoBehaviour:
     baseValue: 5
   armor:
     baseValue: 0
-  maxHealth: 100
+  maxHealth:
+    baseValue: 100
+  currentHealth:
+    baseValue: 0
   goldDrop: {fileID: 1094411758599869586, guid: 2762a14ed6272e9419515ede5690b6ba, type: 3}
   minGoldToDrop: 1
   maxGoldToDrop: 100
@@ -213,7 +216,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: 2c65432525bb2874291336c78befdb2b, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

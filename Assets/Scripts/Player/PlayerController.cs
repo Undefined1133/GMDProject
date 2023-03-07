@@ -8,6 +8,7 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
 		public CharacterController controller;
+		PlayerManager playerManager;
 		public float speed = 5f;
 		public float turnSmoothTime = 0.1f;
 		float turnSmoothVelocity;
@@ -27,6 +28,7 @@ public class PlayerController : MonoBehaviour
 
 	void Start()
 	{
+		playerManager = PlayerManager.instance;
 		itemCollider = gameObject.GetComponent<BoxCollider>();
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
@@ -38,7 +40,7 @@ public class PlayerController : MonoBehaviour
 
 	void Update()
 	{
-			if(Input.GetKeyDown("left alt"))
+		if(Input.GetKeyDown("left alt"))
 		{
 		if(isCursorOn)
 		{
@@ -54,10 +56,17 @@ public class PlayerController : MonoBehaviour
 		}
 		if(Input.GetKeyDown(KeyCode.LeftShift) && !isDashing)
 		{
-			  // Start the dash
+			// Start the dash
 			isDashing = true;
 			currentDashTime = 0f;
 			dashStartPosition = transform.position;
+			PlayerStats playerStats = playerManager.player.GetComponent<PlayerStats>();
+			if(!(playerStats.currentMana.GetValue() < 5))
+			{
+			playerStats.currentMana.SetValue(playerStats.currentMana.GetValue() - 5);
+
+			}
+			playerManager.manaBar.SetMana(playerStats.currentMana.GetValue());
 		}
 		//CAMERA + PLAYER MOVEMENT
 		//-----------------------------------------------------------------------------------------
@@ -137,7 +146,7 @@ public class PlayerController : MonoBehaviour
 				}
 		}
 		//------------------------------------------------------------------------------------------
-		if(Input.GetKey("f"))
+		if(Input.GetKeyDown("f"))
 		{
 			Transform playerObj = transform.Find("PlayerObj");
 			PlayerObject playerObjectScript = playerObj.GetComponent<PlayerObject>();
@@ -159,11 +168,11 @@ public class PlayerController : MonoBehaviour
 		}
 		
 		
-		void OnEnterInteractZone(Interactable newInteractable)
-		{
+	void OnEnterInteractZone(Interactable newInteractable)
+	{
 			interactable = newInteractable;
 			newInteractable.OnEnterInteractZone(transform);
-		}
+	}
 		
 	}
 	
@@ -196,5 +205,10 @@ public class PlayerController : MonoBehaviour
 		{
 			goldToPickUp.Remove(other.gameObject);
 		}
+	}
+	
+	public void SetSpeed(float speedToAdd)
+	{
+		speed += speedToAdd;
 	}
 }

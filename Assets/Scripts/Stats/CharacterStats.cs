@@ -4,32 +4,35 @@ public class CharacterStats : MonoBehaviour
 {
 public Stat damage;
 public Stat armor;
-public int maxHealth;
-public int currentHealth;
-
+public Stat maxHealth;
+public Stat currentHealth;
+public Stat movementSpeed;
+public Stat maxMana;
+public Stat currentMana;
 
 void Awake()
 {
-	currentHealth = maxHealth;
+	currentHealth.SetValue(maxHealth.GetValue());
+	currentMana.SetValue(maxMana.GetValue());
 }
 void Update()
 {
 
 }
 
-	public virtual void TakeDamage(int damage)
-    {
-	damage -= armor.GetValue();
-	damage = Mathf.Clamp(damage, 0, int.MaxValue);
+public virtual void TakeDamage(int damage)
+{
+damage -= armor.GetValue();
+damage = Mathf.Clamp(damage, 0, int.MaxValue);
 	
-	currentHealth -= damage;
-	Debug.Log(transform.name + " takes " + damage + " damage.");
+currentHealth.SetValue(currentHealth.GetValue() - damage);
+Debug.Log(transform.name + " takes " + damage + " damage.");
 	
-	if(currentHealth <= 0)
-	{
-		Die();
-	}
-    }
+if(currentHealth.GetValue() <= 0)
+{
+	Die();
+}
+}
 
 public virtual void Die()
 {
