@@ -1,5 +1,5 @@
-using UnityEngine;
 using TMPro;
+using UnityEngine;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -16,6 +16,11 @@ public GameObject player;
 void Awake()
 {
 	gold = 0f;
+	if(instance != null)
+	{
+		Debug.LogWarning("More than one instance of PlayerManager found!");
+		return;
+	}
 	instance = this;
 }
 

@@ -1,8 +1,6 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
-
 
 public class EnemyController : MonoBehaviour
 {
@@ -12,9 +10,13 @@ public class EnemyController : MonoBehaviour
 	
 	Transform target;
 	CharacterCombat combat;
+	public GameObject bear;
+	Animator bearAnimator;
+	
 	// Start is called before the first frame update
 	void Start()
 	{
+		bearAnimator = bear.GetComponent<Animator>();
 		target = PlayerManager.instance.player.transform;
 		agent = GetComponent<NavMeshAgent>();
 		combat = GetComponent<CharacterCombat>();
@@ -27,22 +29,24 @@ public class EnemyController : MonoBehaviour
 		List<CharacterStats> targetStats = new List<CharacterStats>();
 		if (distance <= lookRadius)
 		{
-			if(agent != null)
+			if(agent != null && target !=null)
 			{
-				if(target != null)
-				{
-			      agent.SetDestination(target.position);
-			      agent.stoppingDistance = 1f;
-			      if(agent.remainingDistance <= agent.stoppingDistance)
-			      {
-				  targetStats.Add(target.GetComponent<CharacterStats>());
-				    if(targetStats != null)
-				    {
-				    combat.Attack(targetStats);
-				    FaceTarget();
-				    }
-		          }
-				}
+				  agent.SetDestination(target.position);
+				  agent.stoppingDistance = 1f;
+				  if(agent.remainingDistance <= agent.stoppingDistance)
+				  {
+					targetStats.Add(target.GetComponent<CharacterStats>());
+					if(targetStats != null && targetStats.Count > 0)
+					{
+					combat.Attack(targetStats);
+					bearAnimator.Play("Attack1");
+					FaceTarget();
+					}
+				  }else
+				  {
+				  	bearAnimator.Play("RunForward");
+					FaceTarget();
+				  }
 			}
 		}
 	}

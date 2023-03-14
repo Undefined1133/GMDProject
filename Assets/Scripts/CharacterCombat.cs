@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 [RequireComponent(typeof(CharacterStats))]
 public class CharacterCombat : MonoBehaviour
 {
@@ -9,7 +11,7 @@ public class CharacterCombat : MonoBehaviour
 	private float attackCooldown = 0f;
 	public float attackDelay = .6f;
 	
-	public event System.Action OnAttack;
+	public event Action OnAttack;
 void Start()
 {
 	myStats = GetComponent<CharacterStats>();

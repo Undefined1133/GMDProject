@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class PlayerStats : CharacterStats
@@ -7,10 +5,14 @@ public class PlayerStats : CharacterStats
 	// Start is called before the first frame update
 	public HealthBar healthBar;
 	public ManaBar manaBar;
+	public ExpBar expBar;
+	
+	private float exp;
 
 	void Start()
 	{
 		healthBar.SetMaxHealth(maxHealth.GetValue());
+		expBar.SetMaxExp(100);
 		manaBar.SetMaxMana(maxMana.GetValue());
 		EquipmentManager.instance.onEquipmentChanged += OnEquipmentChanged;
 	}
@@ -36,6 +38,13 @@ public class PlayerStats : CharacterStats
 			damage.RemoveModifier(oldItem.damageModifier);
 		}
 	
+	}
+	
+	public void OnExpGained(float gainedExp)
+	{
+		exp += gainedExp;
+		expBar.SetExp(exp);
+		Debug.Log("EXPPPPP = " + exp);
 	}
 
 	public override void Die()

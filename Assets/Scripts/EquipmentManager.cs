@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class EquipmentManager : MonoBehaviour
@@ -21,7 +20,7 @@ Inventory inventory;
 void Start()
 {
 	inventory = Inventory.instance;
-	int numSlots = System.Enum.GetNames(typeof(EquipmentSlot)).Length;
+	int numSlots = Enum.GetNames(typeof(EquipmentSlot)).Length;
 	currentEquipment = new Equipment[numSlots];
 }
 
@@ -55,7 +54,7 @@ public void Unequip(int slotIndex)
 		
 		if(onEquipmentChanged != null)
 	 	{
-	 	onEquipmentChanged.Invoke(null, oldItem);
+		    onEquipmentChanged.Invoke(null, oldItem);
 		}
 	}
 }

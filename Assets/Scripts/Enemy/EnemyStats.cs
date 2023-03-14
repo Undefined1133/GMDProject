@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class EnemyStats : CharacterStats
@@ -7,16 +5,31 @@ public class EnemyStats : CharacterStats
 	public GameObject goldDrop;
 	public float minGoldToDrop;
 	public float maxGoldToDrop;
+	public float minExpToDrop;
+	public float maxExpToDrop;
+	public PlayerManager playerManager;
+
 	private int goldPileAmount = 0; 
+	void Start ()
+	{
+		playerManager = PlayerManager.instance;
+	}
    public override void Die()
 	{
 		base.Die();
 		Gold gold = goldDrop.GetComponent<Gold>();
 		gold.SetAmount(minGoldToDrop, maxGoldToDrop);
 		DropCoinsOnGround(goldDrop, transform.position, 3f);
+		DropExp();
 		//Add death animation
 		
 		Destroy(gameObject);
+	}
+	public void DropExp()
+	{
+		float exp = Random.Range(minExpToDrop, maxExpToDrop); 
+		PlayerStats playerStats = playerManager.player.GetComponent<PlayerStats>();
+		playerStats.OnExpGained(exp);
 	}
 	public void DropCoinsOnGround(GameObject goldDrop,  Vector3 position, float radius)
 	{
@@ -29,9 +42,9 @@ public class EnemyStats : CharacterStats
 	{
 	Vector3 randomPoint = position + Random.insideUnitSphere * radius;
 	// Use Terrain.SampleHeight to get the height of the terrain at the random point
-	float terrainHeight = terrain.SampleHeight(randomPoint);
+	float enemyHigh = transform.position.y;
 	// Instantiate the object at the random point with the y-coordinate set to the terrain height
-	randomPoint.y = terrainHeight;
+	randomPoint.y = enemyHigh;
 	Instantiate(goldDrop, randomPoint, Quaternion.identity);
 	}
 

@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
-
 
 public class ShopNPC1 : MonoBehaviour
 {
@@ -17,10 +13,7 @@ public class ShopNPC1 : MonoBehaviour
 	// Update is called once per frame
 	void Update()
 	{
-		if(shopUI.activeSelf)
-		{
-			interactUI.SetActive(false);
-		}
+
 	}
 	
 	public void OnInteractClicked()
@@ -34,7 +27,16 @@ public class ShopNPC1 : MonoBehaviour
 	
 	void OnTriggerEnter()
 	{
+		Debug.Log("KSIUSHA :D");
 		interactUI.SetActive(true);
+	}
+	
+	void OnTriggerStay()
+	{
+		if(shopUI.activeSelf)
+		{
+			interactUI.SetActive(false);
+		}
 	}
 	void OnTriggerExit()
 	{

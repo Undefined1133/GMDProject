@@ -1,9 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-
-
 
 public class PlayerController : MonoBehaviour
 {
@@ -24,11 +20,18 @@ public class PlayerController : MonoBehaviour
 		private bool isDashing = false;
 		private float currentDashTime = 0f;
 		private Vector3 dashStartPosition; 
+		public GameObject playerCharacter;
+		public GameObject slashAnimation;
+		GameObject instantiatedAnimation;
+		Animator characterAnimator;
+		bool isAttacking;
 
 
 	void Start()
 	{
+		isAttacking = false;
 		playerManager = PlayerManager.instance;
+		characterAnimator = playerCharacter.GetComponent<Animator>();
 		itemCollider = gameObject.GetComponent<BoxCollider>();
 		Cursor.lockState = CursorLockMode.Locked;
 		Cursor.visible = false;
@@ -40,31 +43,30 @@ public class PlayerController : MonoBehaviour
 
 	void Update()
 	{
-		if(Input.GetKeyDown("left alt"))
+		if(Input.GetKeyDown(KeyCode.LeftAlt))
+		{  
+			if(isCursorOn) 
+			{ 
+				Cursor.lockState = CursorLockMode.Locked; 
+				Cursor.visible = false; 
+				isCursorOn = false;
+			}else
+			{
+				Cursor.lockState = CursorLockMode.None; 
+				Cursor.visible = true; 
+				isCursorOn = true; 
+			} 
+		} 
+		if(Input.GetKeyDown(KeyCode.Mouse1) && !isDashing)
 		{
-		if(isCursorOn)
-		{
-		Cursor.lockState = CursorLockMode.Locked;
-		Cursor.visible = false;
-		isCursorOn = false;
-		}else
-		{
-		Cursor.lockState = CursorLockMode.None;
-		Cursor.visible = true;
-		isCursorOn = true;
-		}
-		}
-		if(Input.GetKeyDown(KeyCode.LeftShift) && !isDashing)
-		{
-			// Start the dash
-			isDashing = true;
-			currentDashTime = 0f;
-			dashStartPosition = transform.position;
 			PlayerStats playerStats = playerManager.player.GetComponent<PlayerStats>();
 			if(!(playerStats.currentMana.GetValue() < 5))
-			{
-			playerStats.currentMana.SetValue(playerStats.currentMana.GetValue() - 5);
-
+			{ 
+				playerStats.currentMana.SetValue(playerStats.currentMana.GetValue() - 5); 
+				// Start the dash
+				isDashing = true; 
+				currentDashTime = 0f;
+				dashStartPosition = transform.position;
 			}
 			playerManager.manaBar.SetMana(playerStats.currentMana.GetValue());
 		}
@@ -78,54 +80,64 @@ public class PlayerController : MonoBehaviour
 		{
 			float targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.transform.eulerAngles.y;
 			float angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity, turnSmoothTime);
-			transform.rotation = Quaternion.Euler(0f, angle, 0f); 
+			if(!isAttacking)
+			{
+				transform.rotation = Quaternion.Euler(0f, angle, 0f); 
+			}
 			Vector3 moveDirection = Quaternion.Euler(0f, targetAngle, 0f) * Vector3.forward;
 			Move(moveDirection);
+		}else
+		{
+			if(!isAttacking)
+			{
+			   characterAnimator.Play("Idle");
+			}
 		}
-				void Move(Vector3 moveDirection)
-		{
-			 if (isDashing)
-		{
-		// Calculate the dash distance covered so far
-		float dashCoveredDistance = Vector3.Distance(transform.position, dashStartPosition);
-			 // Calculate the factor to multiply the movement by
-		float dashMovementFactor = dashDistance / dashDuration;
-
-		// If the dash distance is not covered yet, move the controller in the dash direction
-		if (dashCoveredDistance < dashDistance)
-		{
-			controller.Move(moveDirection.normalized * speed * dashMovementFactor  * Time.deltaTime);
-			currentDashTime += Time.deltaTime;
-		}
-		else
-		{
-			// End the dash
-			isDashing = false;
-			currentDashTime = 0f;
-		}
-
-		// If the dash duration is over, end the dash
-		if (currentDashTime >= dashDuration)
-		{
-			isDashing = false;
-			currentDashTime = 0f;
-		}
-	}
-	else
-	{
-		// Move the controller in the regular direction
-		controller.Move(moveDirection.normalized * speed * Time.deltaTime);
-	}
+		void Move(Vector3 moveDirection)
+		{ 
+			if(!isAttacking){ 
+				if (isDashing){ 
+					// Calculate the dash distance covered so far
+					float dashCoveredDistance = Vector3.Distance(transform.position, dashStartPosition); 
+					// Calculate the factor to multiply the movement by
+					float dashMovementFactor = dashDistance / dashDuration;
+					// If the dash distance is not covered yet, move the controller in the dash direction
+					if (dashCoveredDistance < dashDistance) 
+					{ 
+						controller.Move(moveDirection.normalized * speed * dashMovementFactor  * Time.deltaTime); 
+						currentDashTime += Time.deltaTime; 
+					}else{ 
+						// End the dash
+						isDashing = false; 
+						currentDashTime = 0f; 
+					} 
+					// If the dash duration is over, end the dash
+					if (currentDashTime >= dashDuration){ 
+						isDashing = false; 
+						currentDashTime = 0f; 
+					} 
+				}else{ 
+					// Move the controller in the regular direction
+					characterAnimator.Play("Move"); 
+					controller.Move(moveDirection.normalized * speed * Time.deltaTime + Physics.gravity * Time.deltaTime); 
+				} 
+			} 
 		}
 		//------------------------------------------------------------------------------------------
-
+	}
+	
+	void CompleteAttack()
+	{
+		Debug.Log("Completing attack :D");
+		if(instantiatedAnimation != null)
+		{
+			Destroy(instantiatedAnimation);
+		}
+		isAttacking = false;
 	}
 	
 	void FixedUpdate()
 	{
-		
-	
-
 		// PICK UP ITEMS/GOLD
 		//------------------------------------------------------------------------------------------
 		if(Input.GetKey("z"))
@@ -148,6 +160,13 @@ public class PlayerController : MonoBehaviour
 		//------------------------------------------------------------------------------------------
 		if(Input.GetKey("f"))
 		{
+			if(!isAttacking)
+			{
+			isAttacking = true;
+			characterAnimator.Play("Attack1");
+			var playerTransform = transform;
+			instantiatedAnimation = Instantiate(slashAnimation, playerTransform.position, playerTransform.rotation);
+			Invoke(nameof(CompleteAttack), combat.attackDelay);
 			Transform playerObj = transform.Find("PlayerObj");
 			PlayerObject playerObjectScript = playerObj.GetComponent<PlayerObject>();
 			List<GameObject> enemies = playerObjectScript.enemiesToAttack;
@@ -162,46 +181,45 @@ public class PlayerController : MonoBehaviour
 			if(enemyStats.Count != 0)
 			{
 				combat.Attack(enemyStats);
-				Debug.Log("HAHAHAH HERE TAKE THIS");
 			}
-
+			}
 		}
+
 		
-		
-	void OnEnterInteractZone(Interactable newInteractable)
-	{
+		void OnEnterInteractZone(Interactable newInteractable) 
+		{
 			interactable = newInteractable;
-			newInteractable.OnEnterInteractZone(transform);
-	}
-		
+			newInteractable.OnEnterInteractZone(transform); 
+		} 
 	}
 	
 	void OnTriggerEnter(Collider other)
 	{
 		Debug.Log("TRIGGERED COLLISION ");
-		if(other.gameObject.tag == "Pickup")
+		if(other.gameObject.CompareTag("Pickup"))
 		{
 			Interactable interactable = other.gameObject.GetComponent<Interactable>();
 			if(interactable !=null)
 				{
 					interactablesToPickup.Add(interactable);
 				}
-		}else if(other.gameObject.tag == "Gold")
+		}else if(other.gameObject.CompareTag("Gold"))
 		{
+			Debug.Log(other.gameObject.tag);
 			goldToPickUp.Add(other.gameObject);
 		}
 	}
 	
 	void OnTriggerExit(Collider other)
 	{
-		if(other.gameObject.tag == "Pickup")
+		if(other.gameObject.CompareTag("Pickup"))
 		{
 			Interactable interactable = other.gameObject.GetComponent<Interactable>();
 			if(interactable !=null)
 				{
 					interactablesToPickup.Remove(interactable);
 				}
-		}else if(other.gameObject.tag == "Gold")
+		}else if(other.gameObject.CompareTag("Gold"))
 		{
 			goldToPickUp.Remove(other.gameObject);
 		}

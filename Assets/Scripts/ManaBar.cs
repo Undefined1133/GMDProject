@@ -1,7 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
 
-
 public class ManaBar : MonoBehaviour
 {
 public Slider slider;
