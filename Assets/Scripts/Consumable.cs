@@ -18,15 +18,15 @@ public class Consumable : MonoBehaviour
 	{
 		float price = int.Parse(priceText.text);
 		if(playerManager.gold <= price)
-		{
-		Debug.LogError("Player does not have enough gold to buy " + potion.name);
+		{ 
+			Debug.LogError("Player does not have enough gold to buy " + potion.name);
 		}else
-		{
-		playerManager.gold -= price;
-		playerManager.SetGold(playerManager.gold);
-		inventory.Add(potion);
+		{ 
+			Debug.Log("BUYING POTION WITH STACK = " + potion.stackSize);
+			playerManager.gold -= price; 
+			playerManager.SetGold(playerManager.gold); 
+			inventory.Add(potion);
 		}
-		Debug.Log(playerManager.gold);
 	}
 
 }

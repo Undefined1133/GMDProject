@@ -8,7 +8,6 @@ public class Gold : MonoBehaviour
 	void Start()
 	{
 		playerManager = PlayerManager.instance;
-		Debug.Log("playermanager" + playerManager);
 	}
 	
 	public void SetAmount(float min, float max)
@@ -18,7 +17,6 @@ public class Gold : MonoBehaviour
 	
 		public void PickUp()
 	{
-
 		// Reduce the amount of gold and destroy the game object
 		playerManager.AddGold(amount);
 		Destroy(gameObject);

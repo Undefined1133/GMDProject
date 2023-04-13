@@ -25,21 +25,26 @@ public class ShopNPC1 : MonoBehaviour
 		shopUI.SetActive(false);
 	}
 	
-	void OnTriggerEnter()
+	void OnTriggerEnter(Collider other)
 	{
-		Debug.Log("KSIUSHA :D");
-		interactUI.SetActive(true);
+		if (other.gameObject.CompareTag("Player"))
+		{
+			interactUI.SetActive(true);
+		}
 	}
 	
-	void OnTriggerStay()
+	void OnTriggerStay(Collider other)
 	{
-		if(shopUI.activeSelf)
+		if(other.gameObject.CompareTag("Player") && shopUI.activeSelf)
 		{
 			interactUI.SetActive(false);
 		}
 	}
-	void OnTriggerExit()
+	void OnTriggerExit(Collider other)
 	{
-		interactUI.SetActive(false);
+		if (other.gameObject.CompareTag("Player"))
+		{
+			interactUI.SetActive(false);
+		}
 	}
 }

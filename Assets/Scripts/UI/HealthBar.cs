@@ -14,11 +14,12 @@ public class HealthBar : MonoBehaviour
 
 	public void SetHealth(int health)
 	{ 
-	  if(health <= slider.maxValue){
-   	  slider.value = health;
+	  if(health <= slider.maxValue) 
+	  { 
+		  slider.value = health;
 	  }else
-	  {
-	  	slider.value = slider.maxValue;
+	  { 
+		  slider.value = slider.maxValue;
 	  }
 	}
    

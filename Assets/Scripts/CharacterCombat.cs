@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [RequireComponent(typeof(CharacterStats))]
 public class CharacterCombat : MonoBehaviour
@@ -11,36 +12,32 @@ public class CharacterCombat : MonoBehaviour
 	private float attackCooldown = 0f;
 	public float attackDelay = .6f;
 	
-	public event Action OnAttack;
-void Start()
-{
-	myStats = GetComponent<CharacterStats>();
-}
-
-void Update()
-{
-	attackCooldown -= Time.deltaTime;
-}
-public void Attack(List<CharacterStats> targetStatsList)
-{
-	if(attackCooldown <= 0f)
-	{
-	  foreach (CharacterStats targetStats in targetStatsList)
-		{
-			StartCoroutine(DoDamage(targetStats, attackDelay));
-		}
-		if(OnAttack != null)
-		{
-			OnAttack();
-		}
-		attackCooldown = 1f / attackSpeed;
+	public event Action OnAttack; 
+	void Start() 
+	{ 
+		myStats = GetComponent<CharacterStats>(); 
 	}
-}
-
-IEnumerator DoDamage(CharacterStats stats, float delay)
-{
-	yield return new WaitForSeconds(delay);
-	stats.TakeDamage(myStats.damage.GetValue());
-}
-
+	
+	void Update() 
+	{ 
+		attackCooldown -= Time.deltaTime; 
+	}
+	public void Attack(List<CharacterStats> targetStatsList) 
+	{ 
+		if(attackCooldown <= 0f && targetStatsList != null) 
+		{ 
+			foreach (CharacterStats targetStats in targetStatsList) 
+			{
+				if (!targetStats.isDead)
+				{
+					targetStats.TakeDamage(Random.Range(myStats.minDamage.GetValue(), myStats.maxDamage.GetValue()));
+				}
+			} 
+			if(OnAttack != null) 
+			{ 
+				OnAttack(); 
+			} 
+			//attackCooldown = 1f / attackSpeed; 
+		} 
+	}
 }
