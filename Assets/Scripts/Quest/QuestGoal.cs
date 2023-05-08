@@ -19,12 +19,19 @@ public class QuestGoal
             currentAmount++;
         }
     }
-    
+
+    public void BossKilled()
+    {
+        if (goalType == GoalType.Boss)
+        {
+            currentAmount++;
+        }
+    }
     
 }
 
 public enum GoalType
 {
     Kill,
-    Gathering
+    Boss
 }

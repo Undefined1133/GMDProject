@@ -65,6 +65,7 @@ public class EquipmentManager : MonoBehaviour
         }
         else
         {
+            Debug.Log("The item is Equipped!");
             Unequip(slotIndex);
             newItem.isEquipped = false;
         }
@@ -73,7 +74,6 @@ public class EquipmentManager : MonoBehaviour
 
     public void Unequip(int slotIndex)
     {
-        Debug.Log("Unequip triggered :DDD");
         //If something is equipped
         if (currentEquipment[slotIndex] != null)
         {
@@ -93,11 +93,7 @@ public class EquipmentManager : MonoBehaviour
         for (var i = 0; i < currentEquipment.Length; i++) Unequip(i);
         equip?.Invoke();
     }
-
-    private void Update()
-    {
-        if (Input.GetKeyDown(KeyCode.U)) UnequipAll();
-    }
+    
 
     private void UpdateEquippedItemsUI(Equipment newItem)
     {
@@ -135,6 +131,7 @@ public class EquipmentManager : MonoBehaviour
 
     private void UpdateUnequippedItemsUI(int slotIndex)
     {
+        Debug.Log("Updating unequippet items with slot index = " + slotIndex);
         //Slot index is using enum inside equipment as index
         //{Head, Chest, Legs, Weapon, Shield, Feet}
         switch (slotIndex)

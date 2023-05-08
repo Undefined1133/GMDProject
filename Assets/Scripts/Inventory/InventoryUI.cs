@@ -34,6 +34,7 @@ public class InventoryUI : MonoBehaviour
 			}else
 			{
 				slots[i].ClearSlot();
+				slots[i].SetStackAmount("");
 			}
 		}
 	}

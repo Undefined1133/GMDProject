@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -56,11 +57,11 @@ public class EnemyController : MonoBehaviour
                     agent.SetDestination(lastKnownLocation);
                     agent.stoppingDistance = 1f;
 
-                    if (agent.remainingDistance <= agent.stoppingDistance)
+                    if (agent.remainingDistance <= agent.stoppingDistance && !enemyStats.isAttackOnCooldown)
                     {
-                        bearAnimator.Play("Attack1");
+                        enemyStats.AttackOnCooldownBegin();
+                        StartCoroutine(AttackAnimation());
                         isAttacking = true;
-                        Invoke(nameof(FinishAttack), 1f);
                         FaceTarget();
                     }
                     else
@@ -82,7 +83,16 @@ public class EnemyController : MonoBehaviour
             }
         }
     }
-
+    private IEnumerator AttackAnimation()
+    {
+        //Wait for the attack animation to finish
+        yield return new WaitForSeconds(1f);
+        bearAnimator.Play("Attack1");
+        //Reset the isAttacking flag
+        isAttacking = false;
+        //Finish the attack
+        FinishAttack();
+    }
     private void FinishAttack()
     {
         var enemyAttackColliderTransform = transform.Find("AttackCollider");
@@ -91,9 +101,8 @@ public class EnemyController : MonoBehaviour
             enemyAttackCollider.playersToAttack[0] != null)
         {
             var playerToAttack = enemyAttackCollider.playersToAttack[0];
-            Debug.Log(playerToAttack.tag);
             targetStats.Add(playerToAttack.GetComponent<CharacterStats>());
-            if (targetStats.Count > 0 && targetStats != null)
+            if (targetStats.Count > 0 && targetStats != null && !targetStats[0].isDead)
             {
                 combat.Attack(targetStats);
             }

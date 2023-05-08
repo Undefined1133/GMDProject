@@ -15,8 +15,6 @@ public class MenuManager : MonoBehaviour
     public AudioClip menuHoverClip;
     public GameObject mainMenu;
 
-
-
     private void Awake()
     {
         if (instance != null)

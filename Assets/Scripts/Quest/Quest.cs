@@ -12,6 +12,8 @@ public class Quest
     public QuestGoal goal;
     public PlayerManager playerManager;
     public GameAudioManager gameAudioManager;
+    public GameObject currentQuestWindow;
+ 
 
     private void SetPlayerManager()
     {
@@ -22,12 +24,11 @@ public class Quest
     public void Complete()
     {
         SetPlayerManager();
+        currentQuestWindow.SetActive(false);
         if (gameAudioManager != null)
         {
-            Debug.Log("Should play the quest complete sound");
             gameAudioManager.OnQuestCompletedPlay();
         }
         isActive = false;
-        Debug.Log("Quest was completed :D");
     }
 }

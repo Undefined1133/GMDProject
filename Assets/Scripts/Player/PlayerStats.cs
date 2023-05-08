@@ -19,18 +19,29 @@ public class PlayerStats : CharacterStats
     public float additionMultiplier = 300;
     public float powerMultiplier = 2;
     public float divisionMultiplier = 7;
+
     public delegate void OnLevelUp();
+
     public OnLevelUp onLevelUp;
+
     public delegate void OnHeal();
+
     public OnHeal onHeal;
+
     public delegate void TakenDamageEventHandler();
+
     public event TakenDamageEventHandler takenDamage;
+
     public delegate void DiedEventHandler();
+
     public event DiedEventHandler died;
-    
+
+    private LogManager logManager;
+
 
     private void Start()
     {
+        logManager = LogManager.instance;
         healthBar.SetMaxHealth(maxHealth.GetValue());
         manaBar.SetMaxMana(maxMana.GetValue());
         expTillNextLevel = CalculateRequiredExp();
@@ -56,6 +67,7 @@ public class PlayerStats : CharacterStats
         currentMaxExperience.text = Mathf.RoundToInt(exp) + "/" + expTillNextLevel;
         expBar.SetMaxExp(expTillNextLevel);
     }
+
     public void OnDamageChanged()
     {
         minMaxDamage.text = minDamage.GetValue() + "-" + maxDamage.GetValue();
@@ -65,6 +77,7 @@ public class PlayerStats : CharacterStats
     {
         speed.text = movementSpeed.GetValue().ToString();
     }
+
     public void OnArmorChanged()
     {
         currentArmor.text = armor.GetValue().ToString();
@@ -85,28 +98,34 @@ public class PlayerStats : CharacterStats
             damage.AddModifier(newItem.damageModifier);
             minDamage.AddModifier(newItem.minDamageModifier);
             maxDamage.AddModifier(newItem.maxDamageModifier);
-            OnDamageChanged(); 
+            maxHealth.AddModifier(newItem.healthModifier);
+            movementSpeed.AddModifier(newItem.speedModifier);
+            OnDamageChanged();
             OnArmorChanged();
-            Debug.Log("Min max damage = " + minDamage.GetValue() + " " + maxDamage.GetValue());
+            OnSpeedChanged();
+            OnHpChanged();
         }
+
         if (oldItem != null)
         {
             armor.RemoveModifier(oldItem.armorModifier);
             damage.RemoveModifier(oldItem.damageModifier);
             minDamage.RemoveModifier(oldItem.minDamageModifier);
             maxDamage.RemoveModifier(oldItem.maxDamageModifier);
-            OnDamageChanged(); 
+            maxHealth.RemoveModifier(oldItem.healthModifier);
+            movementSpeed.RemoveModifier(oldItem.speedModifier);
+            OnDamageChanged();
             OnArmorChanged();
+            OnSpeedChanged();
+            OnHpChanged();
         }
     }
 
     public void OnExpGained(float gainedExp)
     {
+        logManager.ExpGainedLog("+ " + (int) gainedExp + "EXP");
         exp += gainedExp;
-        if (exp > expTillNextLevel)
-        {
-            LevelUp();
-        }
+        if (exp > expTillNextLevel) LevelUp();
         expBar.SetExp(exp);
         OnExpChanged();
         Debug.Log("EXPPPPP = " + exp);
@@ -141,13 +160,11 @@ public class PlayerStats : CharacterStats
 
     private int CalculateRequiredExp()
     {
-        int requiredExp = 0;
-        for (int levelIteration = 1; levelIteration <= level; levelIteration++)
-        {
-            requiredExp += (int)Mathf.Floor(levelIteration +
-                                       additionMultiplier * Mathf.Pow(powerMultiplier,
-                                           levelIteration / divisionMultiplier));
-        }
+        var requiredExp = 0;
+        for (var levelIteration = 1; levelIteration <= level; levelIteration++)
+            requiredExp += (int) Mathf.Floor(levelIteration +
+                                             additionMultiplier * Mathf.Pow(powerMultiplier,
+                                                 levelIteration / divisionMultiplier));
 
         return requiredExp / 4;
     }
@@ -157,7 +174,7 @@ public class PlayerStats : CharacterStats
         base.Die();
         //Kill the player somehow
         died?.Invoke();
-
+        isDead = true;
         PlayerManager.instance.KillPlayer();
     }
 

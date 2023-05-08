@@ -13,7 +13,15 @@ public class ItemPickup : Interactable
 	void PickUp()
 	{
 		Debug.Log("Picking up " + item.name);
-		bool wasPickedUp = Inventory.instance.Add(item);
+		bool wasPickedUp = false;
+		if (item is Equipment equipment)
+		{
+			wasPickedUp = Inventory.instance.Add(equipment.GetCopy());
+		}
+		else
+		{
+			wasPickedUp = Inventory.instance.Add(item);
+		}
 		//If added to inventory, destroy the object
 		if(wasPickedUp)
 		{

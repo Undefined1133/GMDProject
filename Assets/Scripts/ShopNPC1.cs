@@ -4,18 +4,7 @@ public class ShopNPC1 : MonoBehaviour
 {
 	public GameObject interactUI;
 	public GameObject shopUI;
-	// Start is called before the first frame update
-	void Start()
-	{
-		
-	}
 
-	// Update is called once per frame
-	void Update()
-	{
-
-	}
-	
 	public void OnInteractClicked()
 	{
 		shopUI.SetActive(true);
@@ -29,7 +18,7 @@ public class ShopNPC1 : MonoBehaviour
 	{
 		if (other.gameObject.CompareTag("Player"))
 		{
-			interactUI.SetActive(true);
+			shopUI.SetActive(true);
 		}
 	}
 	
@@ -44,7 +33,7 @@ public class ShopNPC1 : MonoBehaviour
 	{
 		if (other.gameObject.CompareTag("Player"))
 		{
-			interactUI.SetActive(false);
+			shopUI.SetActive(false);
 		}
 	}
 }

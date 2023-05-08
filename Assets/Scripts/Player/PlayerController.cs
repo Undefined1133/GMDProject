@@ -30,6 +30,7 @@ public class PlayerController : MonoBehaviour
     public GameObject levelUpAnimation;
     private GameObject instantiatedLevelUpAnimation;
     public GameObject healingAnimation;
+    public GameObject controlPanel;
     private GameObject instantiatedHealingAnimation;
     private GameObject instantiatedAnimation;
     public GameObject healingCircleAnimation;
@@ -45,10 +46,10 @@ public class PlayerController : MonoBehaviour
     private bool isHealOnCooldown;
     private Coroutine healingCoroutine;
     private bool isInsideHealingCircle;
-    private float lastSoundTime = 0f;
-    private float soundCooldown = 1.1f; // for example, half a second
-    private bool isRunning = false;
-    private List<AudioClip> runningClips = new List<AudioClip>();
+    private float lastSoundTime;
+    private readonly float soundCooldown = 1.1f; // for example, half a second
+    private bool isRunning;
+    private readonly List<AudioClip> runningClips = new();
 
     public delegate void DealtDamageEventHandler();
 
@@ -64,6 +65,7 @@ public class PlayerController : MonoBehaviour
         playerStats.takenDamage += OnTakenDamage;
         playerStats.onLevelUp += OnLevelUp;
         playerStats.onHeal += OnHeal;
+        playerStats.died += OnDeath;
         characterAnimator = playerCharacter.GetComponent<Animator>();
         itemCollider = gameObject.GetComponent<BoxCollider>();
         Cursor.lockState = CursorLockMode.Locked;
@@ -80,14 +82,18 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
+        if (playerStats.isDead)
+        {
+            characterAnimator.Play("StayDeath");
+        }
         if (isRunning && Time.time - lastSoundTime >= soundCooldown && runningClips is {Count: > 0})
         {
             var randomNumber = Random.Range(0, 3);
-            Debug.Log("Random number in running :D = " + randomNumber);
-            
+
             gameAudioManager.runningSource.PlayOneShot(runningClips[randomNumber]);
             lastSoundTime = Time.time;
         }
+
         if (Input.GetKeyDown(KeyCode.LeftAlt))
         {
             if (isCursorOn)
@@ -108,6 +114,7 @@ public class PlayerController : MonoBehaviour
                 isCursorOn = true;
             }
         }
+        if (Input.GetKeyDown(KeyCode.H)) controlPanel.SetActive(!controlPanel.activeSelf);
 
         if (Input.GetKeyDown(KeyCode.C)) statUi.SetActive(!statUi.activeSelf);
 
@@ -132,7 +139,7 @@ public class PlayerController : MonoBehaviour
         var vertical = Input.GetAxisRaw("Vertical");
         var direction = new Vector3(horizontalInput, 0f, vertical).normalized;
 
-        if (direction.magnitude >= 0.1f)
+        if (!isCursorOn && direction.magnitude >= 0.1f)
         {
             var targetAngle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg + cam.transform.eulerAngles.y;
             var angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref turnSmoothVelocity,
@@ -143,7 +150,7 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
-            if (!isAttacking && !isTakingDamage)
+            if (!isAttacking && !isTakingDamage && !playerStats.isDead)
             {
                 gameAudioManager.runningSource.Stop();
                 isRunning = false;
@@ -153,7 +160,7 @@ public class PlayerController : MonoBehaviour
 
         void Move(Vector3 moveDirection)
         {
-            if (!isAttacking)
+            if (!isAttacking && !playerStats.isDead) 
             {
                 if (isDashing)
                 {
@@ -173,7 +180,6 @@ public class PlayerController : MonoBehaviour
                         isDashing = false;
                         currentDashTime = 0f;
                     }
-
                     // If the dash duration is over, end the dash
                     if (currentDashTime >= dashDuration)
                     {
@@ -202,8 +208,17 @@ public class PlayerController : MonoBehaviour
         isAttacking = false;
     }
 
+    private void OnDeath()
+    {
+        characterAnimator.Play("Death");
+    }
+
     private void FixedUpdate()
     {
+        if (Input.GetKey(KeyCode.Escape))
+        {
+            Application.Quit();
+        }
         // PICK UP ITEMS/GOLD
         //------------------------------------------------------------------------------------------
         if (Input.GetKey("z"))
@@ -364,7 +379,7 @@ public class PlayerController : MonoBehaviour
         healingCoroutine = null;
     }
 
-// Call this method to start the heal over time skill
+    // Call this method to start the heal over time skill
     public void StartHealOverTime(float healAmount, float duration)
     {
         healingCoroutine = StartCoroutine(HealOverTime(healAmount, duration));

@@ -30,8 +30,6 @@ public class CharacterStats : MonoBehaviour
 
     public virtual void Die()
     {
-        //Die
-        //THIS METHOD HAS TO BE OVERWRITTEN
         isDead = true;
         Debug.Log(transform.name + " died.");
     }

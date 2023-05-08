@@ -28,7 +28,7 @@ public class CharacterCombat : MonoBehaviour
 		{ 
 			foreach (CharacterStats targetStats in targetStatsList) 
 			{
-				if (!targetStats.isDead)
+				if (targetStats != null && !targetStats.isDead)
 				{
 					targetStats.TakeDamage(Random.Range(myStats.minDamage.GetValue(), myStats.maxDamage.GetValue()));
 				}

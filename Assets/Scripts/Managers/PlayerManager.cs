@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.Security.Cryptography;
 using Cinemachine;
 using TMPro;
 using UnityEngine;
-using Random = UnityEngine.Random;
 
 public class PlayerManager : MonoBehaviour
 {
@@ -21,11 +17,12 @@ public class PlayerManager : MonoBehaviour
     private PlayerController playerController;
     private EquipmentManager equipmentManager;
     private GameAudioManager gameAudioManager;
+    private LogManager logManager;
     public Quest quest;
     public TextMeshProUGUI currentQuestStatusText;
-
-
-
+    public TextMeshProUGUI currentLevel;
+    public GameObject winPanel;
+    public GameObject deathPanel;
 
     private void Awake()
     {
@@ -34,35 +31,89 @@ public class PlayerManager : MonoBehaviour
             Debug.LogWarning("More than one instance of PlayerManager found!");
             return;
         }
+
         instance = this;
-        
     }
 
     private void Start()
     {
+        logManager = LogManager.instance;
         equipmentManager = EquipmentManager.instance;
         gameAudioManager = GameAudioManager.instance;
         playerStats = player.GetComponent<PlayerStats>();
         playerController = player.GetComponent<PlayerController>();
+        playerStats.onLevelUp += OnLevelUp;
         gold = 0f;
+        currentLevel.text = playerStats.level.ToString();
     }
 
     #endregion
 
     public void KillPlayer()
     {
-        //KIll player
+        if (deathPanel != null)
+        {
+            deathPanel.SetActive(true);
+        }
     }
-    
+    public void QuitGame()
+    {
+        Application.Quit();
+    }
+
+    public void Respawn()
+    {
+        if (deathPanel != null && deathPanel.activeSelf)
+        {
+            deathPanel.SetActive(false);
+        }
+        playerStats.isDead = false;
+        player.transform.position = new Vector3(825, 146, 4412);
+
+    }
+
+    public void ContinuePlaying()
+    {
+        if (winPanel != null && winPanel.activeSelf)
+        {
+            winPanel.SetActive(false);
+        }
+    }
 
     public void OnHunterQuestKilled()
     {
         currentQuestStatusText.text = quest.goal.currentAmount + "/" + quest.goal.requiredAmount;
+        if (quest.goal.goalType == GoalType.Boss)
+        {
+            winPanel.SetActive(true);
+        }
+    }
+
+    public void OnBossQuestKilled()
+    {
+        currentQuestStatusText.text = quest.goal.currentAmount + "/" + quest.goal.requiredAmount;
+        if (quest.goal.goalType == GoalType.Boss)
+        {
+            winPanel.SetActive(true);
+        }
     }
 
     public void AddGold(float amount)
     {
         gold += amount;
+        logManager.GoldGainedLog("+ " + (int) amount + " Gold");
+        SetGold(gold);
+    }
+
+    public void OnLevelUp()
+    {
+        currentLevel.text = playerStats.level.ToString();
+    }
+
+    public void RemoveGold(float amount)
+    {
+        gold -= amount;
+        logManager.ErrorLog("- " + (int) amount + " Gold");
         SetGold(gold);
     }
 
@@ -94,5 +145,4 @@ public class PlayerManager : MonoBehaviour
         position.z = data.position[2];
         player.transform.position = position;
     }
-    
 }

@@ -30,19 +30,23 @@ public class Inventory : MonoBehaviour
 
     public bool Add(Item item)
     {
-        if (item is Potion)
+        if (item is Potion potion)
         {
-            Debug.Log("Item is potion : " + item.name);
+            Debug.Log("Item is potion : " + potion.name);
             // Check if an existing item of the same type is already in the inventory
             foreach (var existingItem in items)
             {
-                if (existingItem.name == item.name)
+                if (existingItem.name == potion.name)
                 {
-                    var potion = (Potion) item;
-                    potion.stackSize++;
-                    foundExistingItem = true;
-                    onItemChangedCallBack?.Invoke();
-                    Debug.Log("Stack size = " + potion.stackSize);
+                    // Cast existingItem to Potion type, and check if it succeeded
+                    Potion existingPotion = existingItem as Potion;
+                    if (existingPotion != null)
+                    {
+                        existingPotion.stackSize++;
+                        foundExistingItem = true;
+                        onItemChangedCallBack?.Invoke();
+                        Debug.Log("Stack size = " + existingPotion.stackSize);
+                    }
                     //Breaking if an item has been found :D
                     break;
                 }

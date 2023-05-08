@@ -8,10 +8,8 @@ public class EnemyAttackCollider : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log("Triggered by " + other.tag);
         if (other.gameObject.CompareTag("Player"))
         {
-            Debug.Log("I SEE REEEEEEEEEED!");
             var player = other.gameObject;
             if (player != null) playersToAttack.Add(player);
         }
@@ -21,7 +19,6 @@ public class EnemyAttackCollider : MonoBehaviour
     {
         if (other.gameObject.CompareTag("Player"))
         {
-            Debug.Log("Player ran away :3");
             var player = other.gameObject;
             if (player != null) playersToAttack.Remove(player);
         }

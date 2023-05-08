@@ -41,11 +41,11 @@ public class DragonMovement : MonoBehaviour
         {
             isMoving = false;
             animalAnimator.Play("Die");
-
         }
-        if(isMoving && !isAttacking && !dragonStats.isDead) 
+
+        if (isMoving && target != null)
         {
-            if (agent != null && target != null && !isAttacking)
+            if (agent != null)
             {
                 agent.SetDestination(target.transform.position);
                 agent.stoppingDistance = 5f;
@@ -54,23 +54,23 @@ public class DragonMovement : MonoBehaviour
                     List<CharacterStats> targetStats = new List<CharacterStats>();
                     targetStats.Add(target.GetComponent<CharacterStats>());
 
-                    if (targetStats.Count > 0)
+                    if (targetStats.Count > 0 && !isAttacking)
                     {
                         Attack(targetStats);
                     }
                 }
-                else if(!isAttacking)
+                else
                 {
                     animalAnimator.Play("Run");
                     FaceTarget();
                 }
             }
         }
-        else if (isMoving && !isAttacking && !dragonStats.isDead)
+        else if (isMoving)
         {
             PlayAnimation("Run");
             transform.position =
-                    Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
+                Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
 
             FaceTarget();
             // Check if we've reached the target position
@@ -110,21 +110,20 @@ public class DragonMovement : MonoBehaviour
         if (other.gameObject.CompareTag("Player"))
         {
             target = other.gameObject;
-            if (!isMoving)
-            {
-                isFlying = true;
-                animalAnimator.Play("TakeOff");
-            }
+            Debug.Log("TOUCHING PLAYER :D");
         }
     }
 
     void Attack(List<CharacterStats> targetStats)
     {
         isAttacking = true;
-        combat.Attack(targetStats);
-        Invoke(nameof(FinishAttack), 1f);
-        animalAnimator.Play("Attack1");
-        FaceTarget();
+        if (!targetStats[0].isDead)
+        {
+            combat.Attack(targetStats);
+            Invoke(nameof(FinishAttack), 1f);
+            animalAnimator.Play("Attack1");
+            FaceTarget();
+        }
     }
 
     private void FinishAttack()

@@ -1,5 +1,7 @@
+using System;
 using TMPro;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class InventorySlot : MonoBehaviour
@@ -23,9 +25,17 @@ public class InventorySlot : MonoBehaviour
         }
         if (item is Potion potion)
         {
-            Debug.Log("Stack size inside add Item " + potion.stackSize);
             if (potion.stackSize != 0) stackAmount.text = potion.stackSize.ToString();
         }
+    }
+
+    public Item getItem()
+    {
+        if (item != null)
+        {
+            return item;
+        }
+        return null;
     }
 
     public void SetStackAmount(string stack)
@@ -46,7 +56,6 @@ public class InventorySlot : MonoBehaviour
 
     public void OnRemoveButton()
     {
-        Debug.Log("Remove button clicked");
         stackAmount.text = "";
         Inventory.instance.Remove(item);
     }
@@ -58,7 +67,6 @@ public class InventorySlot : MonoBehaviour
             var stackAmountInt = int.Parse(stackAmount.text);
             if (stackAmountInt > 1)
             {
-                Debug.Log(stackAmountInt + " THATS INSIDE USE ITEM INVENTORY SLOT");
                 stackAmountInt--;
                 stackAmount.text = stackAmountInt.ToString();
             }

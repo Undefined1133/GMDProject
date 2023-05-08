@@ -8,8 +8,10 @@ public class Consumable : MonoBehaviour
 	public TextMeshProUGUI priceText;
 	PlayerManager playerManager;
 	Inventory inventory;
+	private LogManager logManager;
 	void Start()
 	{
+		logManager = LogManager.instance;
 		playerManager  = PlayerManager.instance;
 		inventory = Inventory.instance;
 	}
@@ -19,13 +21,11 @@ public class Consumable : MonoBehaviour
 		float price = int.Parse(priceText.text);
 		if(playerManager.gold <= price)
 		{ 
-			Debug.LogError("Player does not have enough gold to buy " + potion.name);
+			logManager.ErrorLog("You don't have enough gold!");
 		}else
 		{ 
-			Debug.Log("BUYING POTION WITH STACK = " + potion.stackSize);
-			playerManager.gold -= price; 
-			playerManager.SetGold(playerManager.gold); 
-			inventory.Add(potion);
+			playerManager.RemoveGold(price);
+			inventory.Add(potion.GetCopy());
 		}
 	}
 

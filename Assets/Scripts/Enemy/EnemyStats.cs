@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -25,6 +26,8 @@ public class EnemyStats : CharacterStats
     private PlayerStats playerStats;
     public float destroyEnemyTime;
     public AudioClip goldDropClip;
+    public float attackCooldown = 1f;
+    public bool isAttackOnCooldown = false;
 
     private void Start()
     {
@@ -38,10 +41,21 @@ public class EnemyStats : CharacterStats
     public override void Die()
     {
         base.Die();
-        if (playerManager.quest.isActive)
+        if (playerManager.quest.goal.goalType == GoalType.Kill && playerManager.quest.isActive)
         {
             playerManager.quest.goal.EnemyKilled();
             playerManager.OnHunterQuestKilled();
+            if (playerManager.quest.goal.IsReached())
+            {
+                playerStats.OnExpGained(playerManager.quest.experienceReward);
+                playerManager.AddGold(playerManager.quest.goldReward);
+                playerManager.quest.Complete();
+            }
+        }else if (gameObject.name == "Red Dragon Boss" &&
+                  playerManager.quest.goal.goalType == GoalType.Boss && playerManager.quest.isActive)
+        {
+            playerManager.quest.goal.BossKilled();
+            playerManager.OnBossQuestKilled();
             if (playerManager.quest.goal.IsReached())
             {
                 playerStats.OnExpGained(playerManager.quest.experienceReward);
@@ -59,6 +73,7 @@ public class EnemyStats : CharacterStats
         DropCoinsOnGround(goldDrop, transform.position, 3f);
         DropExp();
         if (Random.Range(0f, 1f) <= dropChance) DropItemsOnGround(equipmentToDrop, transform.position, 3f);
+        healthBar.gameObject.SetActive(false);
         //Invoking death to use animation in controller class :D
         Invoke(nameof(DestroyEnemy), destroyEnemyTime);
     }
@@ -67,6 +82,21 @@ public class EnemyStats : CharacterStats
     private void DestroyEnemy()
     {
         Destroy(gameObject);
+    }
+
+    public void AttackOnCooldownBegin()
+    {
+        if (!isAttackOnCooldown)
+        {
+            StartCoroutine(StartCooldown());
+        }
+    }
+    
+    private IEnumerator StartCooldown()
+    {
+        isAttackOnCooldown = true;
+        yield return new WaitForSeconds(attackCooldown);
+        isAttackOnCooldown = false;
     }
 
     public override void TakeDamage(int damage)
@@ -114,17 +144,17 @@ public class EnemyStats : CharacterStats
         Debug.Log("COLLIDED :DDD");
     }
 
-    private void DropItemsOnGround(List<GameObject> itemsToDrop, Vector3 position, float radius)
+    private void DropItemsOnGround(List<GameObject> equipmentToDrop, Vector3 position, float radius)
     {
-        var randomItemIndex = Random.Range(0, itemsToDrop.Count);
+        var randomItemIndex = Random.Range(0, equipmentToDrop.Count);
         var randomPoint = position + Random.insideUnitSphere * radius;
         // Use Terrain.SampleHeight to get the height of the terrain at the random point
         // Not using terrain high for now
         var enemyHigh = transform.position.y;
         // Instantiate the object at the random point with the y-coordinate set to the terrain height
         randomPoint.y = enemyHigh;
-        if (itemsToDrop[randomItemIndex] != null)
-            Instantiate(itemsToDrop[randomItemIndex], randomPoint, Quaternion.identity);
+        if (equipmentToDrop[randomItemIndex] != null)
+            Instantiate(equipmentToDrop[randomItemIndex], randomPoint, Quaternion.identity);
         else
             Debug.LogError("NO ITEMS IN LIST :D");
     }

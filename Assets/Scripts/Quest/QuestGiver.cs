@@ -19,6 +19,7 @@ public class QuestGiver : MonoBehaviour
     public TextMeshProUGUI currentQuestExperienceText;
     public TextMeshProUGUI currentQuestGoldText;
     public TextMeshProUGUI currentQuestStatusText;
+    private bool questTaken = false;
 
     private void Start()
     {
@@ -36,10 +37,10 @@ public class QuestGiver : MonoBehaviour
 
     public void AcceptQuest()
     {
+        questTaken = true;
         questWindow.SetActive(false);
         quest.isActive = true;
         currentQuestWindow.SetActive(true);
-        
         currentQuestTitle.text = quest.title;
         currentQuestDescription.text = quest.description;
         currentQuestExperienceText.text = quest.experienceReward.ToString();
@@ -51,5 +52,29 @@ public class QuestGiver : MonoBehaviour
     public void Cancel()
     {
         questWindow.SetActive(false);
+    }
+
+    void OnTriggerEnter(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player") && !questTaken)
+        {
+            questWindow.SetActive(true);
+        }
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player") && questTaken)
+        {
+            questWindow.SetActive(false);
+        }
+    }
+
+    void OnTriggerExit(Collider other)
+    {
+        if (other.gameObject.CompareTag("Player"))
+        {
+            questWindow.SetActive(false);
+        }
     }
 }

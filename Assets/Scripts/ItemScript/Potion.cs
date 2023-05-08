@@ -26,6 +26,19 @@ public class Potion : Item
 			Debug.LogError("Player Manager is null for some reason :D");
 		}
 	}
+	public Potion GetCopy()
+	{
+		Potion copy = CreateInstance<Potion>();
+		copy.name = name;
+		copy.isDefaultItem = isDefaultItem;
+		copy.icon = icon;
+		copy.healthModifier = healthModifier;
+		copy.manaModifier = manaModifier;
+		copy.speedModifier = speedModifier;
+		copy.expModifier = expModifier;
+		copy.stackSize = 1;
+		return copy;
+	}
 	
 
 	public override void Use()
@@ -39,8 +52,6 @@ public class Potion : Item
 			AddMoveSpeed();
 			AddExpRate();
 		}
-
-		Debug.Log("Stack size on USE = " + stackSize);
 		if (stackSize == 1)
 		{
 			RemoveFromInventory();
