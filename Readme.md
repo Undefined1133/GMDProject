@@ -1,6 +1,7 @@
 
 This project is a try to make a game similar to my childhood game Metin2. Even though i loved a lot, this game had one of the issues that almost all MMORPGs had, its the fact that they are P2W.
 In the end it did not end up looking even close to Metin2 :D.
+NO WEBGL LINK!!!! Unfortunately i used HDRP for my project, because i wanted to use terrain builder, and i couldnt make a WEBGL version of the game, my apologies.
 
 
 Link to my video presentation - https://youtu.be/dDpWb0hznpE
