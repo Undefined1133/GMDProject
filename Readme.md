@@ -1,5 +1,6 @@
 
-This project is a try to make a game similar to my childhood game Metin2. Even though i loved a lot, this game had one of the issues that almost all MMORPGs had, its the fact that they are P2W
+This project is a try to make a game similar to my childhood game Metin2. Even though i loved a lot, this game had one of the issues that almost all MMORPGs had, its the fact that they are P2W.
+In the end it did not end up looking even close to Metin2 :D.
 
 
 Link to my video presentation - https://youtu.be/dDpWb0hznpE
