@@ -11,5 +11,7 @@ Sources of third party assets/code :
 Assets were available for public domain, most assets taken from Unity free asset store and https://opengameart.org
 
 Inventory system by Brakeys : https://www.youtube.com/watch?v=w6_fetj9PIw&t
+
 Tolltip system by Game Dev Guide : https://www.youtube.com/watch?v=HXFoUGw7eKk&t
+
 Quest system by Brakeys : https://www.youtube.com/watch?v=e7VEe_qW4oE
